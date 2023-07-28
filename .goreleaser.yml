@@ -48,7 +48,7 @@ kos:
   - id: ko-image
     main: .
     base_image: cgr.dev/chainguard/static
-    repository: ghcr.io/NatzkaLabsOpenSource
+    repository: ghcr.io/natzkalabsopensource
     platforms:
       - all
     tags:
