@@ -44,19 +44,6 @@ archives:
 checksum:
   name_template: checksums.txt
 
-signs:
-  - signature: "${artifact}.sig"
-    certificate: "${artifact}.pem"
-    cmd: cosign
-    args: ["sign-blob", "--output-signature", "${artifact}.sig", "--output-certificate", "${artifact}.pem", "${artifact}"]
-    artifacts: binary
-  - id: checksum-sign
-    signature: "${artifact}.sig"
-    certificate: "${artifact}.pem"
-    cmd: cosign
-    args: ["sign-blob", "--output-signature", "${artifact}.sig", "--output-certificate", "${artifact}.pem", "${artifact}"]
-    artifacts: checksum
-
 kos:
   - id: ko-image
     main: .
