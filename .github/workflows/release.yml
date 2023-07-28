@@ -36,7 +36,7 @@ jobs:
         uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2.2.0
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check out code onto GOPATH
@@ -67,8 +67,8 @@ jobs:
 
       - name: sign image
         run: |
-          DIGEST=$(crane digest ghcr.io/cpanato/github_actions_exporter:${{ steps.get_tag.outputs.tag_name }})
-          cosign sign "ghcr.io/cpanato/github_actions_exporter@${DIGEST}"
+          DIGEST=$(crane digest ghcr.io/NatzkaLabsOpenSource/github_actions_exporter:${{ steps.get_tag.outputs.tag_name }})
+          cosign sign "ghcr.io/NatzkaLabsOpenSource/github_actions_exporter@${DIGEST}"
         env:
           COSIGN_YES: "true"
 

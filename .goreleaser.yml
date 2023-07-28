@@ -34,7 +34,7 @@ builds:
       -X github.com/prometheus/common/version.Version={{.Version}}
       -X github.com/prometheus/common/version.Revision={{.Commit}}
       -X github.com/prometheus/common/version.Branch={{.Branch}}
-      -X github.com/prometheus/common/version.BuildUser=cpanato
+      -X github.com/prometheus/common/version.BuildUser=NatzkaLabsOpenSource
       -X github.com/prometheus/common/version.BuildDate={{.Date}}
 
 archives:
@@ -61,7 +61,7 @@ kos:
   - id: ko-image
     main: .
     base_image: cgr.dev/chainguard/static
-    repository: ghcr.io/cpanato
+    repository: ghcr.io/NatzkaLabsOpenSource
     platforms:
       - all
     tags:
@@ -74,7 +74,7 @@ kos:
 
 release:
   github:
-    owner: cpanato
+    owner: NatzkaLabsOpenSource
     name: github_actions_exporter
   draft: false
   prerelease: allow

@@ -10,6 +10,7 @@ import (
 	"io"
 	"math"
 	"net/http"
+	"sort"
 	"strings"
 
 	"github.com/cpanato/github_actions_exporter/model"
@@ -93,7 +94,7 @@ func (c *WorkflowMetricsExporter) HandleGHWebHook(w http.ResponseWriter, r *http
 func (c *WorkflowMetricsExporter) CollectWorkflowJobEvent(event *github.WorkflowJobEvent) {
 	repo := event.GetRepo().GetName()
 	org := event.GetRepo().GetOwner().GetLogin()
-	runnerGroup := event.WorkflowJob.GetRunnerGroupName()
+	runnerLabel := calculateRunnerLabel(event.GetWorkflowJob().Labels)
 
 	action := event.GetAction()
 	conclusion := event.GetWorkflowJob().GetConclusion()
@@ -111,7 +112,7 @@ func (c *WorkflowMetricsExporter) CollectWorkflowJobEvent(event *github.Workflow
 
 		firstStep := event.WorkflowJob.Steps[0]
 		queuedSeconds := firstStep.StartedAt.Time.Sub(event.WorkflowJob.StartedAt.Time).Seconds()
-		c.PrometheusObserver.ObserveWorkflowJobDuration(org, repo, "queued", runnerGroup, math.Max(0, queuedSeconds))
+		c.PrometheusObserver.ObserveWorkflowJobDuration(org, repo, "queued", runnerLabel, math.Max(0, queuedSeconds))
 	case "completed":
 		if event.WorkflowJob.StartedAt == nil || event.WorkflowJob.CompletedAt == nil {
 			_ = level.Debug(c.Logger).Log("msg", "unable to calculate job duration of completed event steps are missing timestamps")
@@ -119,11 +120,11 @@ func (c *WorkflowMetricsExporter) CollectWorkflowJobEvent(event *github.Workflow
 		}
 
 		jobSeconds := math.Max(0, event.WorkflowJob.GetCompletedAt().Time.Sub(event.WorkflowJob.GetStartedAt().Time).Seconds())
-		c.PrometheusObserver.ObserveWorkflowJobDuration(org, repo, "in_progress", runnerGroup, jobSeconds)
-		c.PrometheusObserver.CountWorkflowJobDuration(org, repo, status, conclusion, runnerGroup, jobSeconds)
+		c.PrometheusObserver.ObserveWorkflowJobDuration(org, repo, "in_progress", runnerLabel, jobSeconds)
+		c.PrometheusObserver.CountWorkflowJobDuration(org, repo, status, conclusion, runnerLabel, jobSeconds)
 	}
 
-	c.PrometheusObserver.CountWorkflowJobStatus(org, repo, status, conclusion, runnerGroup)
+	c.PrometheusObserver.CountWorkflowJobStatus(org, repo, status, conclusion, runnerLabel)
 }
 
 func (c *WorkflowMetricsExporter) CollectWorkflowRunEvent(event *github.WorkflowRunEvent) {
@@ -156,4 +157,24 @@ func validateSignature(gitHubToken string, receivedHash []string, bodyBuffer []b
 	}
 
 	return nil
+}
+
+func calculateRunnerLabel(labels []string) string {
+	// Special exception if self-hosted is the only label present
+	if len(labels) == 1 && labels[0] == "self-hosted" {
+		return "self-hosted"
+	}
+
+	newLabels := make([]string, 0, len(labels))
+	for _, label := range labels {
+		if label == "self-hosted" {
+			continue
+		}
+
+		newLabels = append(newLabels, label)
+	}
+
+	sort.Sort(sort.StringSlice(newLabels))
+
+	return strings.Join(newLabels, ",")
 }
