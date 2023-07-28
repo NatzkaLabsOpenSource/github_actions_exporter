@@ -1,4 +1,4 @@
-project_name: github_actions_exporter
+project_name: github-actions-exporter
 
 env:
   - DOCKER_CLI_EXPERIMENTAL=enabled
@@ -48,7 +48,7 @@ kos:
   - id: ko-image
     main: .
     base_image: cgr.dev/chainguard/static
-    repository: ghcr.io/NatzkaLabsOpenSource/github-actions-exporter
+    repository: ghcr.io/NatzkaLabsOpenSource
     platforms:
       - all
     tags:
