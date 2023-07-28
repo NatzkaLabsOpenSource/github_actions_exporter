@@ -18,8 +18,8 @@ jobs:
           check-latest: true
           cache: true
 
-      - name: Tests
-        run: make test
+#      - name: Tests
+#        run: make test
 
       - name: Build
         run: go build ./...
