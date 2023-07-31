@@ -104,14 +104,12 @@ func (c *WorkflowMetricsExporter) CollectWorkflowJobEvent(event *github.Workflow
 	case "queued":
 		// Do nothing.
 	case "in_progress":
-
-		if len(event.WorkflowJob.Steps) == 0 {
-			_ = level.Debug(c.Logger).Log("msg", "unable to calculate job duration of in_progress event as event has no steps")
+		if event.WorkflowJob.StartedAt == nil || event.WorkflowJob.CreatedAt == nil {
+			_ = level.Debug(c.Logger).Log("msg", "unable to calculate job duration of in_progress event steps are missing timestamps")
 			break
 		}
 
-		firstStep := event.WorkflowJob.Steps[0]
-		queuedSeconds := firstStep.StartedAt.Time.Sub(event.WorkflowJob.StartedAt.Time).Seconds()
+		queuedSeconds := event.WorkflowJob.StartedAt.Time.Sub(event.WorkflowJob.CreatedAt.Time).Seconds()
 		c.PrometheusObserver.ObserveWorkflowJobDuration(org, repo, "queued", runnerLabel, math.Max(0, queuedSeconds))
 	case "completed":
 		if event.WorkflowJob.StartedAt == nil || event.WorkflowJob.CompletedAt == nil {
