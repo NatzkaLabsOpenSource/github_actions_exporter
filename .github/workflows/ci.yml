@@ -35,7 +35,7 @@ jobs:
           check-latest: true
           cache: true
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@639cd343e1d3b897ff35927a75193d57cfcba299 # v3.6.0
+        uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
         timeout-minutes: 5
         with:
-          version: v1.51
+          version: v2.15.0
