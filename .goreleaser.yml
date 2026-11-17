@@ -1,3 +1,5 @@
+version: 2
+
 project_name: github-actions-exporter
 
 env:
@@ -14,7 +16,7 @@ gomod:
   proxy: false
 
 snapshot:
-  name_template: '{{ .Tag }}-SNAPSHOT'
+  version_template: '{{ .Tag }}-SNAPSHOT'
 
 builds:
   - id: binary
@@ -38,7 +40,7 @@ builds:
       -X github.com/prometheus/common/version.BuildDate={{.Date}}
 
 archives:
-  - format: binary
+  - formats: [binary]
     allow_different_binary_count: true
 
 checksum:
@@ -48,7 +50,8 @@ kos:
   - id: ko-image
     main: .
     base_image: cgr.dev/chainguard/static
-    repository: ghcr.io/natzkalabsopensource
+    repositories:
+      - ghcr.io/natzkalabsopensource
     platforms:
       - all
     tags:

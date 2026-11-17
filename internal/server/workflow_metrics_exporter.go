@@ -172,7 +172,7 @@ func calculateRunnerLabel(labels []string) string {
 		newLabels = append(newLabels, label)
 	}
 
-	sort.Sort(sort.StringSlice(newLabels))
+	sort.Strings(newLabels)
 
 	return strings.Join(newLabels, ",")
 }

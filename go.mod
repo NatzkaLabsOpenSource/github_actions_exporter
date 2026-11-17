@@ -1,6 +1,6 @@
 module github.com/cpanato/github_actions_exporter
 
-go 1.20
+go 1.27
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.3.2
